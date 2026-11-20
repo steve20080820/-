@@ -1,0 +1,138 @@
+// 수능 수학 문제 아카이브 & 시험지 빌더
+// - 로컬에서는 SQLite로 바로 실행됩니다.
+// - PostgreSQL/Supabase로 옮길 때는 provider = "postgresql" 로 바꾸고 DATABASE_URL만 교체하면 됩니다.
+//   (JSON 문자열 필드(choices, bogi)는 그대로 호환되며, 원하면 Json 타입으로 승격할 수 있습니다.)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Problem {
+  id            String    @id @default(cuid())
+  title         String?
+  /// 문제 본문 (텍스트 + 인라인 $...$ / 블록 $$...$$ LaTeX, [box]...[/box] 조건 박스)
+  body          String
+  /// "multiple"(5지선다) | "short"(단답형)
+  type          String    @default("multiple")
+  /// JSON 배열 문자열: ["2", "4", "6", "8", "16"]
+  choices       String    @default("[]")
+  /// "auto" | "row"(1행 5개) | "grid"(3+2) | "column"(세로 5줄)
+  choiceLayout  String    @default("auto")
+  /// JSON 배열 문자열: ["함수 ... 이다.", "..."] → ㄱ, ㄴ, ㄷ 자동 부여
+  bogi          String    @default("[]")
+  points        Int       @default(3)
+  answer        String?
+  explanation   String?
+  memo          String?
+
+  // 출처
+  sourceNumber  Int?
+  sourceYear    Int?
+  sourceMonth   Int?
+  /// "평가원" | "교육청" | "사설" | "자작" | "기타"
+  sourceOrg     String    @default("자작")
+  sourceName    String?
+
+  // 단원 (2028 수능 출제 범위 기준, 2015 개정 호환)
+  /// "2028" | "2015"
+  curriculum    String    @default("2028")
+  unitMajor     String    @default("")
+  unitMiddle    String    @default("")
+  unitDetail    String    @default("")
+
+  // 이미지
+  originalImage String?
+  figureImage   String?
+  /// 도형 이미지 폭(단 너비 대비 %)
+  figureWidth   Int       @default(60)
+  /// "center" | "right"
+  figureAlign   String    @default("center")
+
+  // 오답 관리 & 회독
+  difficulty    Int       @default(3)
+  importance    Int       @default(3)
+  solveCount    Int       @default(0)
+  wrongCount    Int       @default(0)
+  lastSolvedAt  DateTime?
+  handwriting   String?
+
+  tags          Tag[]
+  examItems     ExamItem[]
+  solveLogs     SolveLog[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([sourceNumber])
+  @@index([unitMajor, unitMiddle])
+  @@index([points])
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  problems Problem[]
+}
+
+model ExamPaper {
+  id         String     @id @default(cuid())
+  title      String     @default("2028학년도 대비 나만의 모의고사")
+  period     String     @default("제 2 교시")
+  area       String     @default("수학 영역")
+  /// "B4" | "A4"
+  paperSize  String     @default("B4")
+  /// 남은 세로 공간을 문항 사이에 균등 분배
+  distribute Boolean    @default(false)
+  showSource Boolean    @default(false)
+  footer     String     @default("* 확인 사항: 답안지의 해당란에 필요한 내용을 정확히 기입(표기)했는지 확인하시오.")
+  items      ExamItem[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model ExamItem {
+  id          String    @id @default(cuid())
+  examId      String
+  problemId   String
+  order       Int
+  /// 문항 아래 풀이 공간 (mm)
+  spacing     Int       @default(40)
+  /// 이 문항 앞에서 단 넘김 / 페이지 넘김
+  breakBefore String    @default("none")
+  exam        ExamPaper @relation(fields: [examId], references: [id], onDelete: Cascade)
+  problem     Problem   @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([examId, order])
+}
+
+model SolveLog {
+  id        String   @id @default(cuid())
+  problemId String
+  correct   Boolean
+  timeSec   Int?
+  note      String?
+  solvedAt  DateTime @default(now())
+  problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([problemId, solvedAt])
+}
+
+/// 사용자가 업로드한 커스텀 시험지 폰트
+model CustomFont {
+  id        String   @id @default(cuid())
+  family    String   @unique
+  fileName  String
+  format    String
+  createdAt DateTime @default(now())
+}
+
+/// 앱 설정 (key-value)
+model Setting {
+  key   String @id
+  value String
+}

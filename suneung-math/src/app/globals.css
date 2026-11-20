@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* 시험지 폰트: 설정 메뉴에서 커스텀 폰트로 교체 (FontLoader가 갱신) */
+  --paper-font: "KoPubWorldBatang", "Noto Serif KR", "Batang", serif;
+}
+
+html,
+body {
+  background: #f4f3ef;
+  color: #1f2328;
+}
+
+/* ---------- 앱 공통 UI ---------- */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-1 rounded-md border border-stone-300 bg-white px-3 py-1.5 text-sm text-ink shadow-sm transition hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply border-accent bg-accent text-white hover:bg-[#335f91];
+  }
+  .btn-ghost {
+    @apply border-transparent bg-transparent shadow-none hover:bg-stone-100;
+  }
+  .btn-sm {
+    @apply px-2 py-1 text-xs;
+  }
+  .input {
+    @apply w-full rounded-md border border-stone-300 bg-white px-2.5 py-1.5 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/20;
+  }
+  .label {
+    @apply mb-1 block text-xs font-medium text-ink-soft;
+  }
+  .card {
+    @apply rounded-lg border border-stone-200 bg-white shadow-sm;
+  }
+  .chip {
+    @apply inline-flex cursor-pointer select-none items-center rounded-full border border-stone-300 bg-white px-2.5 py-0.5 text-xs text-ink-soft transition hover:border-accent;
+  }
+  .chip-on {
+    @apply border-accent bg-accent-soft text-accent;
+  }
+  .tag {
+    @apply inline-flex items-center rounded bg-stone-100 px-1.5 py-0.5 text-[11px] text-ink-soft;
+  }
+}
+
+/* ---------- 2028 수능 시험지 조판 ---------- */
+.sn-paper,
+.sn-problem {
+  font-family: var(--paper-font);
+  color: #000;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.sn-problem {
+  font-size: var(--sn-size, 10.5pt);
+  line-height: 1.75;
+  letter-spacing: -0.01em;
+}
+.sn-problem .katex {
+  font-size: 1.08em;
+}
+.sn-problem .katex-display,
+.sn-problem .math-block {
+  display: block;
+  text-align: center;
+  margin: 0.35em 0;
+}
+.sn-problem .math-block .katex-display {
+  margin: 0;
+}
+.sn-body {
+  text-align: justify;
+  padding-left: 1.85em;
+  text-indent: -1.85em;
+}
+.sn-body > * {
+  text-indent: 0;
+}
+.sn-num {
+  display: inline-block;
+  min-width: 1.85em;
+  font-weight: 800;
+  font-family: "Noto Serif KR", var(--paper-font);
+  text-indent: 0;
+}
+.sn-points {
+  margin-left: 0.4em;
+  white-space: nowrap;
+  font-size: 0.95em;
+}
+.cond-box {
+  border: 0.8px solid #000;
+  padding: 0.45em 0.8em;
+  margin: 0.5em 0 0.5em 0;
+  text-indent: 0;
+  text-align: left;
+}
+.sn-figure {
+  text-align: center;
+  margin: 0.6em 0 0.4em 1.85em;
+}
+.sn-figure-right {
+  text-align: right;
+}
+.sn-figure img {
+  display: inline-block;
+  max-width: 100%;
+  filter: grayscale(1);
+}
+.sn-bogi {
+  position: relative;
+  border: 0.8px solid #000;
+  margin: 1.1em 0 0.6em 1.85em;
+  padding: 0.95em 0.9em 0.55em;
+}
+.sn-bogi-label {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -55%);
+  background: #fff;
+  padding: 0 0.6em;
+  letter-spacing: 0.15em;
+  line-height: 1;
+  font-size: 0.95em;
+}
+.sn-bogi-item {
+  display: flex;
+  gap: 0.35em;
+  margin: 0.15em 0;
+}
+.sn-bogi-key {
+  flex: none;
+}
+.sn-choices {
+  display: grid;
+  margin: 0.55em 0 0 1.85em;
+  row-gap: 0.25em;
+  column-gap: 0.6em;
+}
+.sn-choices-row {
+  grid-template-columns: repeat(5, max-content);
+  justify-content: space-between;
+  padding-right: 0.5em;
+}
+.sn-choices-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.sn-choices-column {
+  grid-template-columns: minmax(0, 1fr);
+}
+.sn-choice {
+  display: flex;
+  gap: 0.3em;
+  align-items: baseline;
+}
+.sn-choices-row .sn-choice,
+.sn-choices-grid .sn-choice {
+  white-space: nowrap;
+}
+.sn-circle {
+  flex: none;
+}
+.sn-source {
+  margin-top: 0.3em;
+  font-size: 0.8em;
+  color: #444;
+  text-align: right;
+}
+
+/* ---------- 시험지 페이지 ---------- */
+.sn-page {
+  position: relative;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18), 0 6px 20px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  font-family: var(--paper-font);
+  color: #000;
+}
+.sn-colline {
+  position: absolute;
+  width: 0;
+  border-left: 0.8px solid #000;
+}
+.sn-head-title {
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.sn-area {
+  font-weight: 900;
+  letter-spacing: 0.35em;
+}
+.sn-period {
+  border: 1.2px solid #000;
+  border-radius: 999px;
+  padding: 0.1em 0.9em;
+  font-weight: 700;
+}
+
+/* ---------- 인쇄 ---------- */
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .sn-page {
+    box-shadow: none !important;
+    margin: 0 !important;
+    break-after: page;
+    page-break-after: always;
+  }
+  .sn-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+  .print-zoom-reset {
+    zoom: 1 !important;
+    gap: 0 !important;
+    padding: 0 !important;
+  }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
