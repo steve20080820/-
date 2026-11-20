@@ -21,17 +21,19 @@ const blank = (): Cond => ({ unitMajor: "", unitMiddle: "", numMin: "", numMax: 
 
 const PRESETS: { label: string; conds: Partial<Cond>[] }[] = [
   {
-    label: "미적분Ⅰ 4점 5개 + 대수 15번급 2개",
+    label: "미적분Ⅰ 4점 5개 + 대수 준킬러(16~20번) 2개",
     conds: [
       { unitMajor: "미적분Ⅰ", points: "4", count: 5 },
-      { unitMajor: "대수", numMin: "14", numMax: "15", count: 2 },
+      { unitMajor: "대수", numMin: "16", numMax: "20", count: 2 },
     ],
   },
   {
-    label: "킬러 세트 (14~15 · 20~22번)",
+    label: "킬러 세트 (21·30번 + 준킬러)",
     conds: [
-      { numMin: "14", numMax: "15", count: 2 },
-      { numMin: "20", numMax: "22", count: 3 },
+      { numMin: "21", numMax: "21", count: 1 },
+      { numMin: "30", numMax: "30", count: 1 },
+      { numMin: "16", numMax: "20", count: 2 },
+      { numMin: "27", numMax: "29", count: 2 },
     ],
   },
   { label: "오답 복습 10문항", conds: [{ wrongOnly: true, count: 10 }] },
@@ -138,7 +140,7 @@ export default function RandomPage() {
                     <option value="">구간 프리셋</option>
                     {NUMBER_BUCKETS.map((b) => (
                       <option key={b.key} value={b.key}>
-                        {b.min}~{b.max} {b.label}
+                        {b.min === b.max ? `${b.min}번` : `${b.min}~${b.max}`} {b.label}
                       </option>
                     ))}
                   </select>

@@ -120,7 +120,7 @@ $$\sum_{k=1}^{10} \left(2a_k + 3\right) = 70, \qquad \sum_{k=1}^{10} {a_k}^{2} =
     answer: "90",
     explanation: S`$\displaystyle\sum_{k=1}^{10}(2a_k+3) = 2\sum_{k=1}^{10}a_k + 30 = 70$ 에서 $\displaystyle\sum_{k=1}^{10}a_k = 20$.
 $\displaystyle\sum_{k=1}^{10}(a_k+1)^2 = \sum_{k=1}^{10}{a_k}^2 + 2\sum_{k=1}^{10}a_k + 10 = 40 + 40 + 10 = 90$`,
-    sourceNumber: 18,
+    sourceNumber: 23,
     unitMajor: "대수",
     unitMiddle: "수열",
     unitDetail: "수열의 합(∑)",
@@ -142,7 +142,7 @@ $\displaystyle\int_{1}^{x} f(t)\,dt = x^{3} - ax^{2} + bx$
 양변을 $x$ 에 대하여 미분하면 $f(x) = 3x^{2} - 2ax + b$ 이고 $f'(x) = 6x - 2a$ 이다.
 $f'(2) = 0$ 에서 $a = 6$, $b = 5$ 이므로 $f(x) = 3x^{2} - 12x + 5$.
 따라서 $f(3) + a + b = -4 + 6 + 5 = 7$`,
-    sourceNumber: 20,
+    sourceNumber: 28,
     unitMajor: "미적분Ⅰ",
     unitMiddle: "다항함수의 적분법",
     unitDetail: "정적분으로 정의된 함수",

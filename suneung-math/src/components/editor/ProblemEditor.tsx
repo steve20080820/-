@@ -10,7 +10,7 @@ import { TagInput } from "./TagInput";
 import { UnitSelect } from "./UnitSelect";
 import { api, downscale, fileToDataUrl, uploadDataUrl, urlToDataUrl } from "@/lib/client";
 import { BOGI_LABELS, CIRCLED, EMPTY_PROBLEM, type ProblemData } from "@/lib/types";
-import { bucketOf, SOURCE_ORGS } from "@/lib/units";
+import { bucketOf, SHORT_ANSWER_FROM, SOURCE_ORGS } from "@/lib/units";
 import { useCart } from "@/lib/cart";
 
 const SNIPPETS: [string, string][] = [
@@ -169,7 +169,7 @@ export function ProblemEditor({ initial }: { initial?: ProblemData }) {
     router.push("/problems");
   };
 
-  const bucket = bucketOf(p.sourceNumber);
+  const bucket = bucketOf(p.sourceNumber, p.curriculum);
   const layout = resolveLayout(p.choices, p.choiceLayout);
 
   return (
@@ -311,7 +311,12 @@ export function ProblemEditor({ initial }: { initial?: ProblemData }) {
           <div className="grid grid-cols-4 gap-2">
             <div>
               <label className="label">원 출처 번호</label>
-              <input className="input" type="number" min={1} max={30} value={p.sourceNumber ?? ""} onChange={(e) => set("sourceNumber", e.target.value ? +e.target.value : null)} />
+              <input className="input" type="number" min={1} max={30} value={p.sourceNumber ?? ""} onChange={(e) => {
+                  const n = e.target.value ? +e.target.value : null;
+                  set("sourceNumber", n);
+                  // 2028 체제: 1~21 객관식, 22~30 단답형으로 유형 자동 지정 (수동 변경 가능)
+                  if (n && p.curriculum === "2028") set("type", n >= SHORT_ANSWER_FROM ? "short" : "multiple");
+                }} />
             </div>
             <div>
               <label className="label">배점</label>

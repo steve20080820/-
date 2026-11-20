@@ -124,19 +124,40 @@ export function detailsOf(curriculum: string, major: string, middle: string): Un
   return middlesOf(curriculum, major).find((u) => u.name === middle)?.children ?? [];
 }
 
-/** 원 출처 번호 구간 태그 */
-export const NUMBER_BUCKETS = [
-  { key: "b1", label: "공통·객관식 초반", min: 1, max: 8 },
-  { key: "b2", label: "준킬러 객관식", min: 9, max: 13 },
-  { key: "b3", label: "킬러·고난도 객관식", min: 14, max: 15 },
-  { key: "b4", label: "단답형 기본", min: 16, max: 19 },
-  { key: "b5", label: "준킬러·킬러 단답형", min: 20, max: 22 },
-  { key: "b6", label: "2028 체제 23~30번", min: 23, max: 30 },
-] as const;
+/** 원 출처 번호 구간 태그 — 2028 수능 체제: 1~21번 5지선다, 22~30번 단답형 (21·30번 최고난도로 가정)
+ *  구간 경계는 여기서만 바꾸면 사이드바·대시보드·랜덤 생성기에 모두 반영됩니다. */
+export type NumberBucket = { key: string; label: string; min: number; max: number };
 
-export function bucketOf(n?: number | null) {
+export const NUMBER_BUCKETS: NumberBucket[] = [
+  { key: "m1", label: "객관식 기본", min: 1, max: 8 },
+  { key: "m2", label: "객관식 중난도", min: 9, max: 15 },
+  { key: "m3", label: "객관식 준킬러", min: 16, max: 20 },
+  { key: "m4", label: "객관식 최고난도", min: 21, max: 21 },
+  { key: "s1", label: "단답형 기본", min: 22, max: 26 },
+  { key: "s2", label: "단답형 준킬러", min: 27, max: 29 },
+  { key: "s3", label: "단답형 최고난도", min: 30, max: 30 },
+];
+
+/** 2015 개정 수능(공통 1~22 + 선택 23~30) 문항용 구간 */
+export const NUMBER_BUCKETS_2015: NumberBucket[] = [
+  { key: "o1", label: "공통 객관식 기본", min: 1, max: 8 },
+  { key: "o2", label: "공통 객관식 준킬러", min: 9, max: 13 },
+  { key: "o3", label: "공통 객관식 킬러", min: 14, max: 15 },
+  { key: "o4", label: "공통 단답형 기본", min: 16, max: 19 },
+  { key: "o5", label: "공통 단답형 준킬러·킬러", min: 20, max: 22 },
+  { key: "o6", label: "선택과목", min: 23, max: 30 },
+];
+
+/** 2028 체제 기본 문항 유형 (1~21 객관식, 22~30 단답형) */
+export const SHORT_ANSWER_FROM = 22;
+
+export function bucketsFor(curriculum?: string | null) {
+  return curriculum === "2015" ? NUMBER_BUCKETS_2015 : NUMBER_BUCKETS;
+}
+
+export function bucketOf(n?: number | null, curriculum?: string | null) {
   if (!n) return null;
-  return NUMBER_BUCKETS.find((b) => n >= b.min && n <= b.max) ?? null;
+  return bucketsFor(curriculum).find((b) => n >= b.min && n <= b.max) ?? null;
 }
 
 export const SOURCE_ORGS = ["평가원", "교육청", "사설", "자작", "기타"] as const;

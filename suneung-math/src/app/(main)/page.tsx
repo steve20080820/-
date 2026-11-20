@@ -10,7 +10,7 @@ export default async function Dashboard() {
     prisma.problem.count({ where: { wrongCount: { gt: 0 } } }),
     prisma.problem.count({ where: { solveCount: 0 } }),
     prisma.problem.groupBy({ by: ["unitMajor", "unitMiddle"], _count: { _all: true } }),
-    prisma.problem.groupBy({ by: ["sourceNumber"], _count: { _all: true } }),
+    prisma.problem.groupBy({ by: ["sourceNumber"], where: { curriculum: "2028" }, _count: { _all: true } }),
     prisma.examPaper.findMany({ orderBy: { updatedAt: "desc" }, take: 4, include: { _count: { select: { items: true } } } }),
     prisma.solveLog.findMany({ orderBy: { solvedAt: "desc" }, take: 8, include: { problem: { select: { id: true, sourceNumber: true, unitMiddle: true, body: true } } } }),
     prisma.solveLog.count(),
@@ -80,13 +80,14 @@ export default async function Dashboard() {
         </section>
 
         <section className="card p-5">
-          <h2 className="mb-3 font-semibold">번호 구간</h2>
+          <h2 className="mb-1 font-semibold">번호 구간</h2>
+          <p className="mb-3 text-[11px] text-ink-faint">2028 체제 · 1~21 객관식 / 22~30 단답형</p>
           <ul className="space-y-1.5 text-sm">
             {NUMBER_BUCKETS.map((b) => (
               <li key={b.key}>
                 <Link href={`/problems?numMin=${b.min}&numMax=${b.max}`} className="flex items-center rounded px-2 py-1 hover:bg-stone-50">
                   <span className="w-14 text-xs text-ink-faint">
-                    {b.min}~{b.max}
+                    {b.min === b.max ? `${b.min}번` : `${b.min}~${b.max}`}
                   </span>
                   <span className="flex-1">{b.label}</span>
                   <span className="text-xs">{bucketCount(b.min, b.max)}</span>

@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "node:fs/promises";
 import path from "node:path";
 import JSZip from "jszip";
-import { prisma, tagConnect } from "@/lib/db";
+import { normalizeTags, prisma, tagConnect, toProblemRow } from "@/lib/db";
+import type { ProblemData } from "@/lib/types";
 import { BUCKETS, DATA_DIR, listFiles, resolveFile } from "@/lib/storage";
 
 export const maxDuration = 120;
@@ -55,7 +56,7 @@ export async function GET(req: NextRequest) {
 }
 
 type Backup = {
-  problems?: (Record<string, unknown> & { id: string; tags?: string[] })[];
+  problems?: (Record<string, unknown> & { id?: string; tags?: string[] })[];
   solveLogs?: (Record<string, unknown> & { id: string })[];
   exams?: (Record<string, unknown> & { id: string; items?: Record<string, unknown>[] })[];
   fonts?: { family: string; fileName: string; format: string }[];
@@ -109,6 +110,23 @@ export async function POST(req: NextRequest) {
 
   let pCount = 0;
   for (const raw of data.problems ?? []) {
+    // 간단 형식: choices/bogi 가 배열이거나 id 가 없으면 → 앱 입력 형식으로 정규화해 새 문항으로 추가
+    if (!raw.id || Array.isArray(raw.choices) || Array.isArray(raw.bogi)) {
+      const tags = normalizeTags(raw.tags);
+      const row = toProblemRow(raw as unknown as Partial<ProblemData>);
+      if (!row.body.trim()) continue;
+      if (raw.id) {
+        await prisma.problem.upsert({
+          where: { id: raw.id },
+          create: { ...row, id: raw.id, tags: { connectOrCreate: tagConnect(tags) } },
+          update: { ...row, tags: { set: [], connectOrCreate: tagConnect(tags) } },
+        });
+      } else {
+        await prisma.problem.create({ data: { ...row, tags: { connectOrCreate: tagConnect(tags) } } });
+      }
+      pCount++;
+      continue;
+    }
     const { tags = [], id, createdAt, updatedAt, lastSolvedAt, ...rest } = raw;
     const fields = {
       ...(rest as Record<string, unknown>),

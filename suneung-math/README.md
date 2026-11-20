@@ -92,6 +92,30 @@ ANTHROPIC_API_KEY=...   ANTHROPIC_MODEL=claude-sonnet-5-5
 OPENAI_API_KEY=...      OPENAI_MODEL=gpt-4o
 ```
 
+## 번호 구간 (2028 체제)
+
+1~21번 5지선다, 22~30번 단답형. 21·30번을 최고난도로 가정한 구간입니다. 경계는 `src/lib/units.ts`의 `NUMBER_BUCKETS`에서 바꿀 수 있습니다.
+
+| 구간 | 1~8 | 9~15 | 16~20 | 21 | 22~26 | 27~29 | 30 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 분류 | 객관식 기본 | 객관식 중난도 | 객관식 준킬러 | 객관식 최고난도 | 단답형 기본 | 단답형 준킬러 | 단답형 최고난도 |
+
+2015 개정(공통 1~22 + 선택 23~30) 문항은 아카이브에서 `2015 개정`을 켜면 기존 구간으로 분류됩니다.
+
+## 문제 일괄 가져오기 (JSON)
+
+설정 → 백업 & 복원에서 아래 형식의 `.json`을 **병합**으로 복원하면 새 문항으로 추가됩니다.
+
+```json
+{ "problems": [
+  { "body": "함수 $f(x)=x^3-3x$ 의 극댓값은?", "type": "multiple",
+    "choices": ["1","2","3","4","5"], "points": 3, "answer": "2",
+    "sourceNumber": 21, "sourceOrg": "사설", "sourceName": "OO 모의고사 1회",
+    "unitMajor": "미적분Ⅰ", "unitMiddle": "다항함수의 미분법", "tags": ["극값"],
+    "explanation": "..." }
+] }
+```
+
 ## PostgreSQL / Supabase 로 옮기기
 
 `prisma/schema.prisma`의 `provider = "postgresql"`, `.env`의 `DATABASE_URL`을 바꾸고 `npx prisma db push`.

@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/lib/client";
 import { useCart } from "@/lib/cart";
 import type { ProblemData } from "@/lib/types";
-import { bucketOf, NUMBER_BUCKETS, SOURCE_ORGS, UNITS_2015, UNITS_2028 } from "@/lib/units";
+import { bucketOf, bucketsFor, SOURCE_ORGS, UNITS_2015, UNITS_2028 } from "@/lib/units";
 import { ProblemView, sourceLabel } from "../ProblemView";
 import { Stars } from "../Stars";
 
@@ -193,7 +193,7 @@ export function ArchiveView() {
             })}
           </div>
           <div className="mt-2 flex flex-wrap gap-1">
-            {NUMBER_BUCKETS.map((b) => {
+            {bucketsFor(show2015 ? "2015" : "2028").map((b) => {
               const on = sp.get("numMin") === String(b.min) && sp.get("numMax") === String(b.max);
               return (
                 <button
@@ -201,7 +201,7 @@ export function ArchiveView() {
                   className={`chip ${on ? "chip-on" : ""}`}
                   onClick={() => update(on ? { numMin: null, numMax: null } : { numMin: String(b.min), numMax: String(b.max), numbers: null })}
                 >
-                  {b.min}~{b.max} {b.label}
+                  {b.min === b.max ? `${b.min}번` : `${b.min}~${b.max}`} {b.label}
                 </button>
               );
             })}
@@ -346,7 +346,7 @@ export function ArchiveView() {
                 <div className="flex flex-wrap items-center gap-1 border-b border-stone-100 bg-stone-50/60 px-3 py-2 text-[11px]">
                   {p.sourceNumber && (
                     <span className="tag bg-white font-semibold text-ink">
-                      {p.sourceNumber}번 · {bucketOf(p.sourceNumber)?.label}
+                      {p.sourceNumber}번 · {bucketOf(p.sourceNumber, p.curriculum)?.label}
                     </span>
                   )}
                   <span className="tag">{p.points}점</span>
