@@ -12,11 +12,13 @@
 
 ```bash
 cd suneung-math
-cp .env.example .env        # 필요하면 ANTHROPIC_API_KEY 또는 OPENAI_API_KEY 입력
-npm install                 # postinstall 에서 prisma generate 실행
+npm install                 # .env 자동 생성(.env.example 복사) + prisma generate
 npm run setup               # SQLite DB 생성(prisma db push) + 샘플 문제 5개·샘플 시험지 시드
 npm run dev                 # http://localhost:3000
 ```
+
+> AI OCR을 쓰려면 생성된 `.env`에 `ANTHROPIC_API_KEY` 또는 `OPENAI_API_KEY`를 넣고 서버를 재시작하세요.
+> Windows/Mac 모두 같은 명령으로 동작합니다(`cp` 불필요).
 
 | 스크립트 | 설명 |
 | --- | --- |

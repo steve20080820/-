@@ -1,6 +1,9 @@
 import { PrismaClient, type Prisma } from "@prisma/client";
 import type { ProblemData } from "./types";
 
+// .env 가 없어도 기본 SQLite 경로로 동작 (prisma/dev.db)
+process.env.DATABASE_URL ??= "file:./dev.db";
+
 const g = globalThis as unknown as { prisma?: PrismaClient };
 export const prisma = g.prisma ?? new PrismaClient();
 if (process.env.NODE_ENV !== "production") g.prisma = prisma;

@@ -8,10 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "setup": "prisma db push && npm run seed",
+    "setup": "node scripts/ensure-env.mjs && prisma db push && npm run seed",
     "seed": "tsx prisma/seed.ts",
     "db:reset": "prisma db push --force-reset && npm run seed",
-    "postinstall": "prisma generate"
+    "postinstall": "node scripts/ensure-env.mjs && prisma generate",
+    "predev": "node scripts/ensure-env.mjs",
+    "prebuild": "node scripts/ensure-env.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
